@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Repo Auditor | Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --navy: #0f3460;
+            --dark: #1a1a2e;
+            --grey-bg: #f4f7f9;
+            --accent: #e94560;
+            --border: #dcdde1;
+            --code-bg: #2d3436;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--grey-bg);
+            height: 100vh;
+            display: flex;
+            overflow: hidden;
+        }
+
+        /* --- LEFT SIDE: THE INPUT BOX --- */
+        .sidebar {
+            width: 380px;
+            background-color: white;
+            border-right: 1px solid var(--border);
+            padding: 50px 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.02);
+            z-index: 10;
+        }
+
+        .brand {
+            font-weight: 700;
+            color: var(--navy);
+            font-size: 1.4rem;
+            letter-spacing: -0.5px;
+            margin-bottom: 10px;
+        }
+
+        .input-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #7f8c8d;
+            text-transform: uppercase;
+        }
+
+        input {
+            padding: 14px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: #f9f9f9;
+            font-family: inherit;
+            font-size: 0.95rem;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        input:focus {
+            border-color: var(--navy);
+            background: white;
+            box-shadow: 0 0 0 3px rgba(15, 52, 96, 0.1);
+        }
+
+        .btn-analyze {
+            background-color: var(--navy);
+            color: white;
+            padding: 16px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-top: 10px;
+            font-size: 0.9rem;
+        }
+
+        .btn-analyze:hover {
+            background-color: var(--dark);
+            transform: translateY(-1px);
+        }
+
+        .btn-analyze:disabled {
+            background-color: #bdc3c7;
+            cursor: not-allowed;
+        }
+
+        /* --- RIGHT SIDE: THE MINIMAL BIG BOX --- */
+        .display-area {
+            flex: 1;
+            padding: 50px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .report-container {
+            background: white;
+            min-height: 80vh;
+            border-radius: 15px;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .report-header {
+            padding: 25px 35px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .report-header h2 {
+            font-size: 1.2rem;
+            color: var(--navy);
+        }
+
+        .status-tag {
+            font-size: 0.75rem;
+            padding: 5px 12px;
+            background: #eee;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        /* --- THE ANALYSIS CONTENT --- */
+        .report-content {
+            padding: 35px;
+            flex: 1;
+        }
+
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: #bdc3c7;
+            text-align: center;
+        }
+
+        .file-entry {
+            margin-bottom: 30px;
+            animation: slideIn 0.4s ease forwards;
+        }
+
+        .file-name {
+            font-weight: 700;
+            color: var(--navy);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        pre {
+            background: var(--code-bg);
+            color: #dfe6e9;
+            padding: 25px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            line-height: 1.7;
+            white-space: pre-wrap;
+            word-break: break-all;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        .loader {
+            display: none;
+            width: 25px;
+            height: 25px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes slideIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+    </style>
+</head>
+<body>
+
+    <aside class="sidebar">
+        <div>
+            <div class="brand">AUDIT SENTINEL</div>
+            <p style="font-size: 0.8rem; color: #95a5a6;">Professional Repo Analysis</p>
+        </div>
+        
+        <div class="input-wrapper">
+            <label>GitHub Access Token</label>
+            <input type="password" id="token" placeholder="Paste ghp_ token here">
+        </div>
+
+        <div class="input-wrapper">
+            <label>Repository Identifier</label>
+            <input type="text" id="repo" placeholder="username/repo-name">
+        </div>
+
+        <button class="btn-analyze" id="btn" onclick="startAudit()">
+            <span id="btnText">Analyze Repository</span>
+        </button>
+
+        <div style="margin-top: auto; font-size: 0.7rem; color: #bdc3c7;">
+            Connected to 4-Agent Pipeline v1.0
+        </div>
+    </aside>
+
+    <main class="display-area">
+        <div class="report-container">
+            <div class="report-header">
+                <h2>Security & Logic Audit</h2>
+                <div id="statusTag" class="status-tag">System Ready</div>
+            </div>
+
+            <div class="report-content" id="reportContent">
+                <div class="empty-state" id="emptyState">
+                    <p>Enter your repository credentials on the left <br> to generate a full code audit.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        async function startAudit() {
+            const token = document.getElementById('token').value;
+            const repo = document.getElementById('repo').value;
+            const btn = document.getElementById('btn');
+            const btnText = document.getElementById('btnText');
+            const content = document.getElementById('reportContent');
+            const empty = document.getElementById('emptyState');
+            const status = document.getElementById('statusTag');
+
+            if (!token || !repo) {
+                alert("Both Token and Repository are required.");
+                return;
+            }
+
+            // UI Transformation: Loading State
+            btn.disabled = true;
+            btnText.innerHTML = "Agents Working...";
+            status.innerText = "Analyzing...";
+            status.style.background = "#fff3cd";
+            content.innerHTML = '<div class="empty-state"><p>🚀 4-Agents are communicating with GitHub and Gemini...</p></div>';
+
+            try {
+                // Connection to Backend
+                const response = await fetch('http://127.0.0.1:8000/analyze', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        github_token: token,
+                        repo_name: repo,
+                        apply_fix: false
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    content.innerHTML = ""; // Clear loader
+                    status.innerText = "Audit Success";
+                    status.style.background = "#d4edda";
+
+                    data.forEach(item => {
+                        const div = document.createElement('div');
+                        div.className = 'file-entry';
+                        div.innerHTML = `
+                            <div class="file-name">📂 ${item.filename}</div>
+                            <pre>${item.analysis}</pre>
+                        `;
+                        content.appendChild(div);
+                    });
+                } else {
+                    throw new Error(data.detail || "Analysis failed");
+                }
+
+            } catch (err) {
+                status.innerText = "System Error";
+                status.style.background = "#f8d7da";
+                content.innerHTML = `<div class="empty-state" style="color: #e74c3c;"><p>⚠️ ${err.message}<br>Check if your FastAPI server is running.</p></div>`;
+            } finally {
+                btn.disabled = false;
+                btnText.innerText = "Analyze Repository";
+            }
+        }
+    </script>
+</body>
+</html>
