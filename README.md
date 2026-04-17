@@ -32,29 +32,42 @@ This repository template will be used for development, tracking progress, and fi
 
 Clearly describe the problem you are solving.
 
-- What is the problem?
-- Why is it important?
-- Who are the target users?
+- Fragmented Debugging Process: CI/CD failures require engineers to manually analyze logs, commits, and test reports across multiple tools, slowing down issue resolution.
+- Increasing Failure Rates with AI Code: The rise of AI-generated code has led to more frequent pipeline failures, making reliability and validation harder.
+- Security Risks & Lack of Accountability: Fully automated pipelines can introduce security vulnerabilities and reduce traceability, making it difficult to assign responsibility.
 
 ---
 
-## Proposed Solution
+## Proposed SolutionAI-Powered Code Analysis:
+Leverages Google Gemini to deeply analyze code files, detect bugs, logical errors, and bad practices with high contextual understanding.
 
 Explain your approach:
 
-- What are you building?
-- How does it solve the problem?
-- What makes your solution unique?
-
+- Intelligent Repository Monitoring:
+Continuously connects to GitHub repositories and dynamically fetches relevant source code files using API integration, enabling real-time analysis readiness.
+- AI-Powered Code Analysis:
+Leverages Google Gemini to deeply analyze code files, detect bugs, logical errors, and bad practices with high contextual understanding.
+-Automated Fix Suggestions:
+Generates structured, developer-friendly fixes for identified issues, including corrected code snippets, reducing debugging time and effort.
+-Human-in-the-Loop Repair System:
+Ensures control and security by allowing users to review and approve suggested fixes before applying them, maintaining accountability and flexibility.
 ---
 
 ## Features
 
 List the core features of your project:
 
-- Feature 1
-- Feature 2
-- Feature 3
+- 1. Multi-Agent Code Analysis System
+Implements a structured pipeline of specialized agents (Monitoring, Analysis, Suggestion, Repair) to efficiently process and analyze repository code.
+
+- 2. AI-Powered Bug Detection
+Uses Google Gemini to intelligently identify bugs, logical errors, and inefficient coding patterns across files.
+
+- 3. Automated Fix Suggestions
+Generates clear, actionable solutions along with corrected code snippets, helping developers resolve issues faster.
+
+- 4. Human-in-the-Loop Control
+Allows users to review and approve fixes before applying them, ensuring flexibility, security, and trust in the system.
 
 ---
 
@@ -62,11 +75,11 @@ List the core features of your project:
 
 Mention all technologies used:
 
-- Frontend:
-- Backend:
+- Frontend: HTML, CSS AND JAVASCRIPT
+- Backend: PYTHON AND FASTAPI
 - Database:
-- APIs / Services:
-- Tools / Libraries:
+- APIs / Services: FASTAPI AND GEMINI API KEY
+- Tools / Libraries: GOOGLE AI STUDIOS, PYTHON LIBRARIES
 
 ---
 
